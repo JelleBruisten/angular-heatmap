@@ -21,13 +21,13 @@ export class AngularHeatMapService implements OnDestroy {
 
   protected currentHeatmap: HeatMapData;
   protected currentHeatmapSubject: Subject<HeatMapData> = new Subject<HeatMapData>();
-  protected HeatMapData: HeatMapData[] = [];
-  protected HeatMapDataSubject: Subject<HeatMapData[]> = new Subject<HeatMapData[]>();
-  timer: Observable<number>;
-  timerSubscription: Subscription;
+  protected heatMapData: HeatMapData[] = [];
+  protected heatMapDataSubject: Subject<HeatMapData[]> = new Subject<HeatMapData[]>();
+  protected timer: Observable<number>;
+  protected timerSubscription: Subscription;
 
-  public get HeatMapData$() {
-    return this.HeatMapDataSubject.asObservable();
+  public get heatMapData$() {
+    return this.heatMapDataSubject.asObservable();
   }
 
   public get currentHeatMap$() {
@@ -87,7 +87,7 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   protected findTrackingObject(): HeatMapData | undefined {
-    return this.HeatMapData.find((a: HeatMapData) => {
+    return this.heatMapData.find((a: HeatMapData) => {
       return a.windowHeight === this.windowHeight && a.windowWidth === this.windowWidth && this.currentRouterPath === a.path;
     });
   }
@@ -120,7 +120,7 @@ export class AngularHeatMapService implements OnDestroy {
       path: this.currentRouterPath,
       movements: []
     };
-    this.HeatMapData.push(newTrackingObject);
+    this.heatMapData.push(newTrackingObject);
     this.currentHeatmap = newTrackingObject;
   }
 
@@ -133,7 +133,7 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   protected update() {
-    this.HeatMapDataSubject.next(this.HeatMapData);
+    this.heatMapDataSubject.next(this.heatMapData);
     this.currentHeatmapSubject.next(this.currentHeatmap);
   }
 
