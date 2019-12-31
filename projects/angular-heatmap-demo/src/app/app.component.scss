@@ -1,3 +1,11 @@
+div.heatmap {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 999;
+  pointer-events: none;
+}
+
 div.container {
   margin: auto;
   width: 80%;

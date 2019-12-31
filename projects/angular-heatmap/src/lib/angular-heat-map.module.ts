@@ -1,7 +1,8 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { NgModule, ModuleWithProviders, InjectionToken } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AngularHeatMapService } from '../public-api';
 import { AngularHeatMapDirective } from './angular-heat-map.directive';
+import { AngularHeatMapConfig, createAngularHeatMapConfig, ANGULAR_HEATMAP_CONFIG } from './angular-heat-map.config';
+import { AngularHeatMapService } from './angular-heat-map.service';
 
 @NgModule({
   imports: [
@@ -18,10 +19,17 @@ import { AngularHeatMapDirective } from './angular-heat-map.directive';
   ]
 })
 export class HeatMapModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(config?: AngularHeatMapConfig): ModuleWithProviders {
+    const conf = createAngularHeatMapConfig(config);
     return {
       ngModule: HeatMapModule,
-      providers: [ AngularHeatMapService ]
+      providers: [
+        AngularHeatMapService,
+        {
+          provide: ANGULAR_HEATMAP_CONFIG,
+          useValue: conf
+        }
+      ]
     };
   }
 }

@@ -1,8 +1,9 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { Observable, Subscription, Subject, fromEvent } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { HeatMapData } from './angular-heat-map-data';
+import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
 @Injectable()
 export class AngularHeatMapService implements OnDestroy {
@@ -29,7 +30,10 @@ export class AngularHeatMapService implements OnDestroy {
     return this.currentHeatmapSubject.asObservable();
   }
 
-  constructor(private router: Router) {
+  constructor(
+    @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
+    private router: Router
+  ) {
 
     this.updateHeatMapData();
 
@@ -54,7 +58,7 @@ export class AngularHeatMapService implements OnDestroy {
     // listen on mouse movements
     this.mouseMoveStream = fromEvent<MouseEvent>(document, 'mousemove');
     this.mouseMoveSubscription = this.mouseMoveStream
-    .pipe(auditTime(10))
+    .pipe(auditTime(this.config.mouseMovementsInterval))
     .subscribe((event: MouseEvent) => {
       this.logTrackingEvent(event);
     });
@@ -104,10 +108,9 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   protected logTrackingEvent(event: MouseEvent) {
-
     this.currentHeatmap.movements.push({
-      x: event.clientX,
-      y: event.clientY
+      x: event.pageX,
+      y: event.pageY
     });
     this.update();
   }
