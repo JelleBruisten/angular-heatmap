@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "angular-heatmap": [
+        "dist/angular-heatmap"
+      ],
+      "angular-heatmap/*": [
+        "dist/angular-heatmap/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
