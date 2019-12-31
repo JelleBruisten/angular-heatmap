@@ -25,6 +25,11 @@ export class AngularHeatMapService implements OnDestroy {
   protected heatMapDataSubject: Subject<HeatMapData[]> = new Subject<HeatMapData[]>();
   protected timer: Observable<number>;
   protected timerSubscription: Subscription;
+  protected mouseLeaveStream: Observable<MouseEvent>;
+  protected mouseLeaveSubscription: Subscription;
+  protected mouseEnterStream: Observable<MouseEvent>;
+  protected mouseEnterSubscription: Subscription;
+  protected active: boolean;
 
   public get heatMapData$() {
     return this.heatMapDataSubject.asObservable();
@@ -68,6 +73,16 @@ export class AngularHeatMapService implements OnDestroy {
       this.updateMousePosition(event);
     });
 
+    this.mouseLeaveStream = fromEvent<MouseEvent>(document, 'mouseleave');
+    this.mouseLeaveSubscription = this.mouseLeaveStream.subscribe(() => {
+      this.active = false;
+    });
+
+    this.mouseEnterStream = fromEvent<MouseEvent>(document, 'mouseenter');
+    this.mouseEnterSubscription = this.mouseEnterStream.subscribe(() => {
+      this.active = true;
+    });
+
     // listen on resize
     this.resizeStream = fromEvent(window, 'resize', {
       passive: true
@@ -78,7 +93,9 @@ export class AngularHeatMapService implements OnDestroy {
 
     this.timer = timer(0, this.config.mouseMovementsInterval);
     this.timerSubscription = this.timer.subscribe(() => {
-      this.addTrackingLog();
+      if (this.active) {
+        this.addTrackingLog();
+      }
     });
 
     // init sizes
