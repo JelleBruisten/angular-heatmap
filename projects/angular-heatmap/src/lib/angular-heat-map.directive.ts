@@ -61,14 +61,18 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit() {
-    this.canvas.width = Math.max(window.innerWidth, document.body.scrollWidth);
-    this.canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+    this.setCanvasSize();
     this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationEnd) {
-        this.canvas.width = Math.min(window.innerWidth, document.body.scrollWidth);
-        this.canvas.height = Math.min(window.innerHeight, document.body.scrollHeight);
+        this.setCanvasSize();
       }
     });
+  }
+
+  setCanvasSize() {
+    this.canvas.width = document.body.clientWidth;
+    this.canvas.height = document.body.clientHeight;
+    console.log('height', this.canvas.height, 'width', this.canvas.width);
   }
 
   draw() {
