@@ -25,6 +25,14 @@ import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
       heatMapPointRadius : 5,
       heatMapPointAlpha: 1,
       mouseMovementsInterval: 10,
+      heatMapGradientColors: {
+        0.4 : 'blue',
+        0.6 : 'cyan',
+        0.7  : 'lime',
+        0.8 : 'yellow',
+        0.9 : 'orange',
+        1 : 'red'
+      }
     })
   ],
   providers: [],

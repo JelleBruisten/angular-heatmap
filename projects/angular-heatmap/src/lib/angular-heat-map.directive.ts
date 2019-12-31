@@ -1,13 +1,14 @@
-import { Directive, ElementRef, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { HeatMapData, HeatMapDataPoint } from './angular-heat-map-data';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { AngularHeatMapService } from './angular-heat-map.service';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
+import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 
 @Directive({
   selector: 'canvas[libAngularHeatMap]'
 })
-export class AngularHeatMapDirective implements OnInit, OnDestroy {
+export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy {
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -20,10 +21,12 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
   scrollEvent: Observable<Event>;
   currentHeatMapSubscription: Subscription;
   scrolEventSubscription: Subscription;
+  gradientColors: {};
 
   constructor(
     @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
     private elementRef: ElementRef,
+    private router: Router,
     private service: AngularHeatMapService) {
 
     if (elementRef.nativeElement instanceof HTMLCanvasElement) {
@@ -36,9 +39,7 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
     this.radius = this.config.heatMapPointRadius;
     this.shadowBlur = this.config.heatMapPointRadiusBlur;
     this.globalAlpha = this.config.heatMapPointAlpha;
-
-    this.canvas.width = window.innerWidth;
-    this.canvas.height = window.innerHeight;
+    this.gradientColors = this.config.heatMapGradientColors;
     this.ctx = this.canvas.getContext('2d');
 
     // create gradiant
@@ -59,6 +60,17 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit() {
+    this.canvas.width = Math.max(window.innerWidth, document.body.scrollWidth);
+    this.canvas.height = Math.max(window.innerHeight, document.body.scrollHeight);
+    this.router.events.subscribe((event: RouterEvent) => {
+      if (event instanceof NavigationEnd) {
+        this.canvas.width = Math.min(window.innerWidth, document.body.scrollWidth);
+        this.canvas.height = Math.min(window.innerHeight, document.body.scrollHeight);
+      }
+    });
+  }
+
   draw() {
       // clear ec
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -70,8 +82,8 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
       this.ctx.fillStyle = `rgba(255, 255, 255, ${this.globalAlpha})`;
 
       this.currentHeatmap.movements.forEach((p: HeatMapDataPoint) => {
-        const x = 2 * p.x - window.scrollX;
-        const y = 2 * p.y - window.scrollY;
+        const x = 2 * p.x; // - window.scrollX;
+        const y = 2 * p.y; // - window.scrollY;
 
         this.ctx.beginPath();
         this.ctx.shadowOffsetX = x;
@@ -97,11 +109,16 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
     const gradiant = ctx.createLinearGradient(0, 0, 0, 256);
     canvas.width = 256;
     canvas.height = 256;
-    gradiant.addColorStop(0.4, 'blue');
-    gradiant.addColorStop(0.6, 'cyan');
-    gradiant.addColorStop(0.7, 'lime');
-    gradiant.addColorStop(0.8, 'yellow');
-    gradiant.addColorStop(1, 'red');
+
+    const colors = Object.keys(this.gradientColors);
+    if (colors.length) {
+      colors.forEach(key => {
+        const offset = Number(key);
+        if (!Number.isNaN(offset)) {
+          gradiant.addColorStop(offset, this.gradientColors[key]);
+        }
+      });
+    }
     ctx.fillStyle = gradiant;
     ctx.fillRect(0, 0, 1, 256);
     return ctx.getImageData(0, 0, 1, 256);

@@ -29,7 +29,7 @@ export class AngularHeatMapService implements OnDestroy {
   protected mouseLeaveSubscription: Subscription;
   protected mouseEnterStream: Observable<MouseEvent>;
   protected mouseEnterSubscription: Subscription;
-  protected active: boolean;
+  protected active = false;
 
   public get heatMapData$() {
     return this.heatMapDataSubject.asObservable();
@@ -73,10 +73,10 @@ export class AngularHeatMapService implements OnDestroy {
       this.updateMousePosition(event);
     });
 
-    this.mouseLeaveStream = fromEvent<MouseEvent>(document, 'mouseleave');
-    this.mouseLeaveSubscription = this.mouseLeaveStream.subscribe(() => {
-      this.active = false;
-    });
+    // this.mouseLeaveStream = fromEvent<MouseEvent>(document, 'mouseleave');
+    // this.mouseLeaveSubscription = this.mouseLeaveStream.subscribe(() => {
+    //   this.active = false;
+    // });
 
     this.mouseEnterStream = fromEvent<MouseEvent>(document, 'mouseenter');
     this.mouseEnterSubscription = this.mouseEnterStream.subscribe(() => {
@@ -116,6 +116,7 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   protected updateMousePosition(event: MouseEvent) {
+    this.active = true;
     this.mouseX = event.pageX;
     this.mouseY = event.pageY;
   }
@@ -157,5 +158,7 @@ export class AngularHeatMapService implements OnDestroy {
   ngOnDestroy() {
     this.mouseMoveSubscription.unsubscribe();
     this.resizeSubscription.unsubscribe();
+    this.mouseEnterSubscription.unsubscribe();
+    this.mouseLeaveSubscription.unsubscribe();
   }
 }
