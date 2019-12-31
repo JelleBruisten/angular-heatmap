@@ -48,7 +48,9 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
       this.draw();
     });
 
-    const scrollEvent = fromEvent(window, 'scroll');
+    const scrollEvent = fromEvent(window, 'scroll', {
+      passive: true
+    });
     this.scrolEventSubscription = scrollEvent.subscribe(() => {
       this.draw();
     });
@@ -60,7 +62,7 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
 
       // draw a black/white image with blurred effects
       this.ctx.globalAlpha = 1;
-      this.ctx.shadowBlur = this.radius * 5;
+      this.ctx.shadowBlur = this.shadowBlur;
       this.ctx.shadowColor = 'black';
       this.ctx.fillStyle = 'rgba(255, 255, 255, 0.0)';
       this.ctx.fillStyle = 'black';

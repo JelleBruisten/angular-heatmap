@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
-import { Observable, Subscription, Subject, fromEvent } from 'rxjs';
+import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 import { HeatMapData } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
@@ -16,11 +16,15 @@ export class AngularHeatMapService implements OnDestroy {
   protected currentRouterPath = '';
   protected windowHeight = 0;
   protected windowWidth = 0;
+  protected mouseX = 0;
+  protected mouseY = 0;
 
   protected currentHeatmap: HeatMapData;
   protected currentHeatmapSubject: Subject<HeatMapData> = new Subject<HeatMapData>();
   protected HeatMapData: HeatMapData[] = [];
   protected HeatMapDataSubject: Subject<HeatMapData[]> = new Subject<HeatMapData[]>();
+  timer: Observable<number>;
+  timerSubscription: Subscription;
 
   public get HeatMapData$() {
     return this.HeatMapDataSubject.asObservable();
@@ -56,17 +60,25 @@ export class AngularHeatMapService implements OnDestroy {
     });
 
     // listen on mouse movements
-    this.mouseMoveStream = fromEvent<MouseEvent>(document, 'mousemove');
+    this.mouseMoveStream = fromEvent<MouseEvent>(document, 'mousemove', {
+      passive: true
+    });
     this.mouseMoveSubscription = this.mouseMoveStream
-    .pipe(auditTime(this.config.mouseMovementsInterval))
     .subscribe((event: MouseEvent) => {
-      this.logTrackingEvent(event);
+      this.updateMousePosition(event);
     });
 
     // listen on resize
-    this.resizeStream = fromEvent(window, 'resize');
+    this.resizeStream = fromEvent(window, 'resize', {
+      passive: true
+    });
     this.resizeSubscription = this.resizeStream.subscribe((event) => {
       this.updateWindowSize();
+    });
+
+    this.timer = timer(0, this.config.mouseMovementsInterval);
+    this.timerSubscription = this.timer.subscribe(() => {
+      this.addTrackingLog();
     });
 
     // init sizes
@@ -84,6 +96,11 @@ export class AngularHeatMapService implements OnDestroy {
     this.windowHeight = window.outerHeight;
     this.windowWidth = window.outerWidth;
     this.updateHeatMapData();
+  }
+
+  protected updateMousePosition(event: MouseEvent) {
+    this.mouseX = event.pageX;
+    this.mouseY = event.pageY;
   }
 
   protected updateHeatMapData() {
@@ -107,10 +124,10 @@ export class AngularHeatMapService implements OnDestroy {
     this.currentHeatmap = newTrackingObject;
   }
 
-  protected logTrackingEvent(event: MouseEvent) {
+  protected addTrackingLog() {
     this.currentHeatmap.movements.push({
-      x: event.pageX,
-      y: event.pageY
+      x: this.mouseX,
+      y: this.mouseY
     });
     this.update();
   }

@@ -21,8 +21,9 @@ import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
     BrowserModule,
     AppRoutingModule,
     HeatMapModule.forRoot({
-      heatMapPointRadiusBlur : 2,
-      heatMapPointRadius : 1
+      heatMapPointRadiusBlur : 25,
+      heatMapPointRadius : 5,
+      mouseMovementsInterval: 10
     })
   ],
   providers: [],
