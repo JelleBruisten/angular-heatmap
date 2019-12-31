@@ -6,12 +6,14 @@ export interface AngularHeatMapConfig {
   mouseMovementsInterval?: number;
   heatMapPointRadius?: number;
   heatMapPointRadiusBlur?: number;
+  heatMapPointAlpha?: number;
 }
 
 export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
   mouseMovementsInterval: 10,
   heatMapPointRadius: 5,
-  heatMapPointRadiusBlur: 25
+  heatMapPointRadiusBlur: 25,
+  heatMapPointAlpha: 0.5
 };
 
 export function createAngularHeatMapConfig(config?: AngularHeatMapConfig): AngularHeatMapConfig {

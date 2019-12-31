@@ -15,6 +15,7 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
 
   radius = 5;
   shadowBlur = 25;
+  globalAlpha = 1;
   gradiant: ImageData;
   scrollEvent: Observable<Event>;
   currentHeatMapSubscription: Subscription;
@@ -34,6 +35,8 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
 
     this.radius = this.config.heatMapPointRadius;
     this.shadowBlur = this.config.heatMapPointRadiusBlur;
+    this.globalAlpha = this.config.heatMapPointAlpha;
+
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
     this.ctx = this.canvas.getContext('2d');
@@ -61,11 +64,10 @@ export class AngularHeatMapDirective implements OnInit, OnDestroy {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       // draw a black/white image with blurred effects
-      this.ctx.globalAlpha = 1;
+      this.ctx.globalAlpha = this.globalAlpha;
       this.ctx.shadowBlur = this.shadowBlur;
       this.ctx.shadowColor = 'black';
-      this.ctx.fillStyle = 'rgba(255, 255, 255, 0.0)';
-      this.ctx.fillStyle = 'black';
+      this.ctx.fillStyle = `rgba(255, 255, 255, ${this.globalAlpha})`;
 
       this.currentHeatmap.movements.forEach((p: HeatMapDataPoint) => {
         const x = 2 * p.x - window.scrollX;
