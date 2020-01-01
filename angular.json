@@ -159,6 +159,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "angular-heatmap"
+    }
+  },
+  "defaultProject": "angular-heatmap",
+  "cli": {
+    "analytics": false
+  }
 }

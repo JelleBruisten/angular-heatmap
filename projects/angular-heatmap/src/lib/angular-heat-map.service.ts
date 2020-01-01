@@ -1,7 +1,6 @@
 import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
-import { auditTime } from 'rxjs/operators';
 import { HeatMapData } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
