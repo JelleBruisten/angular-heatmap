@@ -23,7 +23,7 @@ import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
     HeatMapModule.forRoot({
       heatMapPointRadiusBlur : 25,
       heatMapPointRadius : 5,
-      heatMapPointAlpha: 1,
+      heatMapPointAlpha: 0.5,
       mouseMovementsInterval: 10,
       heatMapGradientColors: {
         0.4 : 'blue',
