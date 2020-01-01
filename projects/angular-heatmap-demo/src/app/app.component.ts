@@ -21,7 +21,8 @@ export class AppComponent implements OnDestroy {
 
   constructor(private service: AngularHeatMapService, @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig) {
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
-      this.data = data;
+      this.data = { ...data};
+      console.log('data changed!', data);
     });
   }
 

@@ -44,10 +44,13 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     // create gradiant
     this.config = injectedConfig;
     this.createGradiant();
+    console.log(this);
   }
 
   ngOnChanges() {
     this.draw();
+    console.log(this);
+    console.log('detect changes?');
   }
 
   ngOnInit() {
@@ -74,6 +77,7 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   }
 
   draw() {
+    console.log('draw');
     // clear ec
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
