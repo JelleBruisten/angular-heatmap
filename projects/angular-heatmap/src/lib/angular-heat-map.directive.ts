@@ -1,17 +1,18 @@
 import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { HeatMapData, HeatMapDataPoint } from './angular-heat-map-data';
+import { AngularHeatMapData, AngularHeatMapDataPoint } from './angular-heat-map-data';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { AngularHeatMapService } from './angular-heat-map.service';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 
 @Directive({
+  // tslint:disable-next-line: directive-selector
   selector: '[AngularHeatMap]'
 })
 export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
   @Input('AngularHeatMapData')
-  data: HeatMapData;
+  data: AngularHeatMapData;
   config: AngularHeatMapConfig;
 
   @Input('AngularHeatMapConfig')
@@ -83,7 +84,7 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.ctx.fillStyle = `rgba(255, 255, 255, ${this.config.heatMapPointAlpha})`;
 
     if (this.data && this.data.movements) {
-      this.data.movements.forEach((p: HeatMapDataPoint) => {
+      this.data.movements.forEach((p: AngularHeatMapDataPoint) => {
         const x = 2 * p.x;
         const y = 2 * p.y;
 

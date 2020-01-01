@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
-import { HeatMapData } from './angular-heat-map-data';
+import { AngularHeatMapData } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
 @Injectable()
@@ -18,10 +18,10 @@ export class AngularHeatMapService implements OnDestroy {
   protected mouseX = -10;
   protected mouseY = -10;
 
-  protected currentHeatmap: HeatMapData;
-  protected currentHeatmapSubject: Subject<HeatMapData> = new Subject<HeatMapData>();
-  protected heatMapData: HeatMapData[] = [];
-  protected heatMapDataSubject: Subject<HeatMapData[]> = new Subject<HeatMapData[]>();
+  protected currentHeatmap: AngularHeatMapData;
+  protected currentHeatmapSubject: Subject<AngularHeatMapData> = new Subject<AngularHeatMapData>();
+  protected heatMapData: AngularHeatMapData[] = [];
+  protected heatMapDataSubject: Subject<AngularHeatMapData[]> = new Subject<AngularHeatMapData[]>();
   protected timer: Observable<number>;
   protected timerSubscription: Subscription;
   protected mouseLeaveStream: Observable<MouseEvent>;
@@ -98,8 +98,8 @@ export class AngularHeatMapService implements OnDestroy {
     this.windowWidth = window.outerWidth;
   }
 
-  protected findTrackingObject(): HeatMapData | undefined {
-    return this.heatMapData.find((a: HeatMapData) => {
+  protected findTrackingObject(): AngularHeatMapData | undefined {
+    return this.heatMapData.find((a: AngularHeatMapData) => {
       return a.windowHeight === this.windowHeight && a.windowWidth === this.windowWidth && this.currentRouterPath === a.path;
     });
   }
@@ -127,7 +127,7 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   protected createHeatMapData() {
-    const newTrackingObject: HeatMapData = {
+    const newTrackingObject: AngularHeatMapData = {
       windowHeight: this.windowHeight,
       windowWidth: this.windowWidth,
       path: this.currentRouterPath,

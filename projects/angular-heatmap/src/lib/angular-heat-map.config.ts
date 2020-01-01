@@ -25,7 +25,3 @@ export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
     1 : 'red'
   }
 };
-
-export function createAngularHeatMapConfig(config?: AngularHeatMapConfig): AngularHeatMapConfig {
-  return { ... defaultAngularHeatMapConfig, ... config };
-}

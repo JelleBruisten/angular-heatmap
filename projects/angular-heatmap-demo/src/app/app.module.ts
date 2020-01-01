@@ -8,7 +8,7 @@ import { Page1Component } from './page1/page1.component';
 import { Page2Component } from './page2/page2.component';
 import { Page3Component } from './page3/page3.component';
 import { Page4Component } from './page4/page4.component';
-import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
+import { AngularHeatMapModule } from 'projects/angular-heatmap/src/public-api';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,7 @@ import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
     BrowserModule,
     FormsModule,
     AppRoutingModule,
-    HeatMapModule.forRoot({
+    AngularHeatMapModule.forRoot({
       heatMapPointRadiusBlur : 25,
       heatMapPointRadius : 5,
       heatMapPointAlpha: 0.5,

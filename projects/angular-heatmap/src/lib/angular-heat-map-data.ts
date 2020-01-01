@@ -1,11 +1,11 @@
-export interface HeatMapData {
+export interface AngularHeatMapData {
   path: string;
   windowHeight: number;
   windowWidth: number;
-  movements: HeatMapDataPoint[];
+  movements: AngularHeatMapDataPoint[];
 }
 
-export interface HeatMapDataPoint {
+export interface AngularHeatMapDataPoint {
   x: number;
   y: number;
 }
