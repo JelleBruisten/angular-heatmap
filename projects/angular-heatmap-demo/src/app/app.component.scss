@@ -8,6 +8,14 @@ div.heatmap {
   left: 0;
 }
 
+div.directiveConfig {
+  position: fixed;
+  left: 0;
+  top: 30%;
+  width: 100px;
+  z-index: 1000;
+}
+
 div.container {
   margin: auto;
   width: 80%;

@@ -12,6 +12,13 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
 
   @Input('AngularHeatMapData')
   data: HeatMapData;
+  config: AngularHeatMapConfig;
+
+  @Input('AngularHeatMapConfig')
+  set angularHeatMapConfig(config: AngularHeatMapConfig) {
+    this.config = config;
+    this.createGradiant();
+  }
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -21,11 +28,10 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   scrolEventSubscription: Subscription;
 
   constructor(
-    @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
+    @Inject(ANGULAR_HEATMAP_CONFIG) injectedConfig: AngularHeatMapConfig,
     private elementRef: ElementRef,
     private router: Router,
     ) {
-
     if (elementRef.nativeElement instanceof HTMLCanvasElement) {
       this.canvas = elementRef.nativeElement;
     } else {
@@ -35,12 +41,12 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.ctx = this.canvas.getContext('2d');
 
     // create gradiant
-    this.gradiant = this.createGradiant();
+    this.config = injectedConfig;
+    this.createGradiant();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.draw();
-    console.log(this.data);
   }
 
   ngOnInit() {
@@ -64,7 +70,6 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   setCanvasSize() {
     this.canvas.width = document.body.clientWidth;
     this.canvas.height = document.body.clientHeight;
-    console.log('height', this.canvas.height, 'width', this.canvas.width);
   }
 
   draw() {
@@ -97,11 +102,10 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnDestroy() {
-    this.currentHeatMapSubscription.unsubscribe();
     this.scrolEventSubscription.unsubscribe();
   }
 
-  createGradiant(): ImageData {
+  createGradiant() {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const gradiant = ctx.createLinearGradient(0, 0, 0, 256);
@@ -119,7 +123,7 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     }
     ctx.fillStyle = gradiant;
     ctx.fillRect(0, 0, 1, 256);
-    return ctx.getImageData(0, 0, 1, 256);
+    this.gradiant = ctx.getImageData(0, 0, 1, 256);
   }
 
   createColorData(pixels: Uint8ClampedArray) {

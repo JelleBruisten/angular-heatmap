@@ -1,3 +1,17 @@
+<div class="directiveConfig">
+  <label>
+    Radius
+    <input type="number" [(ngModel)]="config.heatMapPointRadius" (ngModelChange)="angularHeatMap.draw();" min="0" max="100" />
+  </label>
+  <label>
+    Radius Blur
+    <input type="number" [(ngModel)]="config.heatMapPointRadiusBlur" (ngModelChange)="angularHeatMap.draw();" min="0" max="100" />
+  </label>
+  <label>
+    Radius Alpha
+    <input type="number" [(ngModel)]="config.heatMapPointAlpha" (ngModelChange)="angularHeatMap.draw();" min="0" max="1" step="0.1" />
+  </label>
+</div>
 <div class="heatmap">
   <canvas AngularHeatMap [AngularHeatMapData]="data"></canvas>
 </div>
