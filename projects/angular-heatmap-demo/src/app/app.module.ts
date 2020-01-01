@@ -1,5 +1,7 @@
+import { Subscription } from 'rxjs';
+import { AngularHeatMapService } from './../../../angular-heatmap/src/lib/angular-heat-map.service';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, OnDestroy } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,6 +10,7 @@ import { Page2Component } from './page2/page2.component';
 import { Page3Component } from './page3/page3.component';
 import { Page4Component } from './page4/page4.component';
 import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
+import { HeatMapData } from 'projects/angular-heatmap/src/lib/angular-heat-map-data';
 
 @NgModule({
   declarations: [
@@ -38,4 +41,5 @@ import { HeatMapModule } from 'projects/angular-heatmap/src/public-api';
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

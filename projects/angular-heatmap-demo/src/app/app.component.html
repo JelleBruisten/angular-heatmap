@@ -1,5 +1,5 @@
 <div class="heatmap">
-  <canvas libAngularHeatMap></canvas>
+  <canvas AngularHeatMap [AngularHeatMapData]="data"></canvas>
 </div>
 <div class="container">
   <ul>
@@ -14,7 +14,7 @@
     </li>
     <li>
       <a routerLink="/page4">Page Four</a>
-    </li>      
+    </li>
   </ul>
   <router-outlet></router-outlet>
 </div>

@@ -4,6 +4,7 @@ export const ANGULAR_HEATMAP_CONFIG = new InjectionToken<AngularHeatMapConfig>('
 
 export interface AngularHeatMapConfig {
   mouseMovementsInterval?: number;
+  maxMouseTickWithoutChange?: number;
   heatMapPointRadius?: number;
   heatMapPointRadiusBlur?: number;
   heatMapPointAlpha?: number;
@@ -12,6 +13,7 @@ export interface AngularHeatMapConfig {
 
 export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
   mouseMovementsInterval: 10,
+  maxMouseTickWithoutChange: 2,
   heatMapPointRadius: 5,
   heatMapPointRadiusBlur: 25,
   heatMapPointAlpha: 0.5,

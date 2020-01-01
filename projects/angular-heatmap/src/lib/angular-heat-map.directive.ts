@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { HeatMapData, HeatMapDataPoint } from './angular-heat-map-data';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { AngularHeatMapService } from './angular-heat-map.service';
@@ -6,23 +6,25 @@ import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map
 import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 
 @Directive({
-  selector: 'canvas[libAngularHeatMap]'
+  selector: '[AngularHeatMap]'
 })
-export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy {
+export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+
+  @Input('AngularHeatMapData')
+  data: HeatMapData;
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
-  currentHeatmap: HeatMapData;
+
   gradiant: ImageData;
   scrollEvent: Observable<Event>;
-  currentHeatMapSubscription: Subscription;
   scrolEventSubscription: Subscription;
 
   constructor(
     @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
     private elementRef: ElementRef,
     private router: Router,
-    private service: AngularHeatMapService) {
+    ) {
 
     if (elementRef.nativeElement instanceof HTMLCanvasElement) {
       this.canvas = elementRef.nativeElement;
@@ -36,12 +38,12 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.gradiant = this.createGradiant();
   }
 
-  ngOnInit() {
-    this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe((heatMapData: HeatMapData) => {
-      this.currentHeatmap = heatMapData;
-      this.draw();
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    this.draw();
+    console.log(this.data);
+  }
 
+  ngOnInit() {
     const scrollEvent = fromEvent(window, 'scroll', {
       passive: true
     });
@@ -75,17 +77,19 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.ctx.shadowColor = 'black';
     this.ctx.fillStyle = `rgba(255, 255, 255, ${this.config.heatMapPointAlpha})`;
 
-    this.currentHeatmap.movements.forEach((p: HeatMapDataPoint) => {
-      const x = 2 * p.x; // - window.scrollX;
-      const y = 2 * p.y; // - window.scrollY;
+    if (this.data && this.data.movements) {
+      this.data.movements.forEach((p: HeatMapDataPoint) => {
+        const x = 2 * p.x;
+        const y = 2 * p.y;
 
-      this.ctx.beginPath();
-      this.ctx.shadowOffsetX = x;
-      this.ctx.shadowOffsetY = y;
-      this.ctx.arc(-p.x, -p.y, this.config.heatMapPointRadius, 0, Math.PI * 2, true);
-      this.ctx.fill();
-      this.ctx.closePath();
-    });
+        this.ctx.beginPath();
+        this.ctx.shadowOffsetX = x;
+        this.ctx.shadowOffsetY = y;
+        this.ctx.arc(-p.x, -p.y, this.config.heatMapPointRadius, 0, Math.PI * 2, true);
+        this.ctx.fill();
+        this.ctx.closePath();
+      });
+    }
 
     const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     this.createColorData(imageData.data);
