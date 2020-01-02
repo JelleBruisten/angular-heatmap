@@ -8,7 +8,7 @@ import { Page1Component } from './page1/page1.component';
 import { Page2Component } from './page2/page2.component';
 import { Page3Component } from './page3/page3.component';
 import { Page4Component } from './page4/page4.component';
-import { AngularHeatMapModule } from 'projects/angular-heatmap/src/public-api';
+import { AngularHeatMapModule } from 'projects/angular-heatmap/src/lib/angular-heat-map.module';
 
 @NgModule({
   declarations: [

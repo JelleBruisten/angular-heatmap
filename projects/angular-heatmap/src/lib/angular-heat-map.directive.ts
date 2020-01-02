@@ -1,7 +1,6 @@
-import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, Input, OnChanges } from '@angular/core';
 import { AngularHeatMapData, AngularHeatMapDataPoint } from './angular-heat-map-data';
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { AngularHeatMapService } from './angular-heat-map.service';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 
@@ -11,13 +10,13 @@ import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 })
 export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
-  @Input('AngularHeatMapData')
-  data: AngularHeatMapData;
-  config: AngularHeatMapConfig;
+  @Input()
+  AngularHeatMapData: AngularHeatMapData;
+  heatmapConfig: AngularHeatMapConfig;
 
-  @Input('AngularHeatMapConfig')
-  set angularHeatMapConfig(config: AngularHeatMapConfig) {
-    this.config = config;
+  @Input()
+  set AngularHeatMapConfig(config: AngularHeatMapConfig) {
+    this.heatmapConfig = config;
     this.createGradiant();
   }
 
@@ -42,15 +41,12 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.ctx = this.canvas.getContext('2d');
 
     // create gradiant
-    this.config = injectedConfig;
+    this.heatmapConfig = injectedConfig;
     this.createGradiant();
-    console.log(this);
   }
 
   ngOnChanges() {
     this.draw();
-    console.log(this);
-    console.log('detect changes?');
   }
 
   ngOnInit() {
@@ -82,20 +78,20 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // draw a black/white image with blurred effects
-    this.ctx.globalAlpha = this.config.heatMapPointAlpha;
-    this.ctx.shadowBlur = this.config.heatMapPointRadiusBlur;
+    this.ctx.globalAlpha = this.heatmapConfig.heatMapPointAlpha;
+    this.ctx.shadowBlur = this.heatmapConfig.heatMapPointRadiusBlur;
     this.ctx.shadowColor = 'black';
-    this.ctx.fillStyle = `rgba(255, 255, 255, ${this.config.heatMapPointAlpha})`;
+    this.ctx.fillStyle = `rgba(255, 255, 255, ${this.heatmapConfig.heatMapPointAlpha})`;
 
-    if (this.data && this.data.movements) {
-      this.data.movements.forEach((p: AngularHeatMapDataPoint) => {
+    if (this.AngularHeatMapData && this.AngularHeatMapData.movements) {
+      this.AngularHeatMapData.movements.forEach((p: AngularHeatMapDataPoint) => {
         const x = 2 * p.x;
         const y = 2 * p.y;
 
         this.ctx.beginPath();
         this.ctx.shadowOffsetX = x;
         this.ctx.shadowOffsetY = y;
-        this.ctx.arc(-p.x, -p.y, this.config.heatMapPointRadius, 0, Math.PI * 2, true);
+        this.ctx.arc(-p.x, -p.y, this.heatmapConfig.heatMapPointRadius, 0, Math.PI * 2, true);
         this.ctx.fill();
         this.ctx.closePath();
       });
@@ -117,12 +113,12 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     canvas.width = 256;
     canvas.height = 256;
 
-    const colors = Object.keys(this.config.heatMapGradientColors);
+    const colors = Object.keys(this.heatmapConfig.heatMapGradientColors);
     if (colors.length) {
       colors.forEach(key => {
         const offset = Number(key);
         if (!Number.isNaN(offset)) {
-          gradiant.addColorStop(offset, this.config.heatMapGradientColors[key]);
+          gradiant.addColorStop(offset, this.heatmapConfig.heatMapGradientColors[key]);
         }
       });
     }
