@@ -1,3 +1,0 @@
-- make directive either fixed and repaint on scroll or make it as big as current page ( after navigation or anything resize it and paint only on changes)
-- configurable colours
-- minimize data structure look into it
