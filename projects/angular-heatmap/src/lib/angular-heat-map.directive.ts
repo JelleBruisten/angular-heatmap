@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Inject, OnInit, OnDestroy, AfterViewInit, Input, OnChanges } from '@angular/core';
 import { AngularHeatMapData, AngularHeatMapDataPoint } from './angular-heat-map-data';
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
+import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig, AngularHeatMapGradientColor } from './angular-heat-map.config';
 import { Router, RouterEvent, NavigationEnd } from '@angular/router';
 
 @Directive({
@@ -73,7 +73,6 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   }
 
   draw() {
-    console.log('draw');
     // clear ec
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -112,16 +111,10 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
     const gradiant = ctx.createLinearGradient(0, 0, 0, 256);
     canvas.width = 256;
     canvas.height = 256;
+    this.heatmapConfig.heatMapGradientColors.forEach((colorStop: AngularHeatMapGradientColor) => {
+      gradiant.addColorStop(colorStop.offset, colorStop.color);
+    });
 
-    const colors = Object.keys(this.heatmapConfig.heatMapGradientColors);
-    if (colors.length) {
-      colors.forEach(key => {
-        const offset = Number(key);
-        if (!Number.isNaN(offset)) {
-          gradiant.addColorStop(offset, this.heatmapConfig.heatMapGradientColors[key]);
-        }
-      });
-    }
     ctx.fillStyle = gradiant;
     ctx.fillRect(0, 0, 1, 256);
     this.gradiant = ctx.getImageData(0, 0, 1, 256);

@@ -20,14 +20,17 @@ export class AppComponent implements OnDestroy {
   @ViewChild(AngularHeatMapDirective, {static: false}) angularHeatMap: AngularHeatMapDirective;
 
   constructor(private service: AngularHeatMapService, @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig) {
-    console.log(this);
+
+    console.log(this.config);
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
-      this.data = { ...data};
+      this.data = { ...data };
       // console.log('data changed!', data);
     });
   }
 
   ngOnDestroy() {
-    this.currentHeatMapSubscription.unsubscribe();
+    if(this.currentHeatMapSubscription) {
+      this.currentHeatMapSubscription.unsubscribe();
+    }
   }
 }

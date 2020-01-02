@@ -57,7 +57,7 @@
             "main": "projects/angular-heatmap-demo/src/main.ts",
             "polyfills": "projects/angular-heatmap-demo/src/polyfills.ts",
             "tsConfig": "projects/angular-heatmap-demo/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "projects/angular-heatmap-demo/src/favicon.ico",
               "projects/angular-heatmap-demo/src/assets"

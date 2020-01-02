@@ -8,7 +8,12 @@ export interface AngularHeatMapConfig {
   heatMapPointRadius?: number;
   heatMapPointRadiusBlur?: number;
   heatMapPointAlpha?: number;
-  heatMapGradientColors?: {};
+  heatMapGradientColors?: AngularHeatMapGradientColor[];
+}
+
+export interface AngularHeatMapGradientColor {
+  offset: number;
+  color: string;
 }
 
 export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
@@ -17,11 +22,15 @@ export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
   heatMapPointRadius: 5,
   heatMapPointRadiusBlur: 25,
   heatMapPointAlpha: 0.5,
-  heatMapGradientColors: {
-    0.4 : 'blue',
-    0.6 : 'cyan',
-    0.7  : 'lime',
-    0.8 : 'yellow',
-    1 : 'red'
-  }
+  heatMapGradientColors: [
+    { offset : 0.4, color: 'blue' },
+    { offset : 0.6, color: 'cyan' },
+    { offset : 0.7, color: 'lime' },
+    { offset : 0.8, color: 'yellow' },
+    { offset : 1,   color: 'red' }
+  ]
 };
+
+export function AngularHeatMapConfigFactory(config?: AngularHeatMapConfig): AngularHeatMapConfig {
+  return { ... defaultAngularHeatMapConfig, ... config};
+}
