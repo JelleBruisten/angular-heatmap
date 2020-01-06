@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
-import { AngularHeatMapData } from './angular-heat-map-data';
+import { AngularHeatMapData, AngularHeatMapTimedDataPoint } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
 @Injectable({
@@ -144,10 +144,20 @@ export class AngularHeatMapService implements OnDestroy {
       this.pointerY > 0
       // this.windowHeight > this.pointerY
     ) {
-      this.currentHeatmap.movements.push({
-        x: this.pointerX,
-        y: this.pointerY
-      });
+
+      if (this.config.pointerMovementsIncludeTimestamp) {
+        const p: AngularHeatMapTimedDataPoint = {
+          x: this.pointerX,
+          y: this.pointerY,
+          timestamp : new Date().getTime()
+        };
+        this.currentHeatmap.movements.push(p);
+      } else {
+        this.currentHeatmap.movements.push({
+          x: this.pointerX,
+          y: this.pointerY
+        });
+      }
       this.update();
     }
   }

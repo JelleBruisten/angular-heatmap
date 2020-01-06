@@ -27,6 +27,7 @@ import { AngularHeatMapModule, ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfigFacto
   providers: [ {
     provide: ANGULAR_HEATMAP_CONFIG,
     useValue: AngularHeatMapConfigFactory({
+      pointerMovementsIncludeTimestamp: true,
       heatMapPointRadiusBlur : 25,
       heatMapPointRadius : 5,
       heatMapPointAlpha: 0.5,

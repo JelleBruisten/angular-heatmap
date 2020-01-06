@@ -3,6 +3,7 @@ import { InjectionToken } from '@angular/core';
 export const ANGULAR_HEATMAP_CONFIG = new InjectionToken<AngularHeatMapConfig>('Angular Heatmap Configuration');
 
 export interface AngularHeatMapConfig {
+  pointerMovementsIncludeTimestamp?: boolean;
   pointerMovementsInterval?: number;
   maxPointerTickWithoutChange?: number;
   heatMapPointRadius?: number;
@@ -17,6 +18,7 @@ export interface AngularHeatMapGradientColor {
 }
 
 export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
+  pointerMovementsIncludeTimestamp: false,
   pointerMovementsInterval: 10,
   maxPointerTickWithoutChange: 2,
   heatMapPointRadius: 5,

@@ -72,4 +72,34 @@ Don't forget to unsubscribe
   }
 ```
 
+## Data format:
+The produced data will always be in the form:
+### path will be constructed from router events
+url of example.com/user/edit/12398290380293 and a path in route configuration : /user/edit/:id
+path will be filed with /user/edit/:id
+
+### Movements:
+Movements will be in format of {x: number, y: number}
+
+To include timestamps in every move add the following to the configuration:
+pointerMovementsIncludeTimestamp : true
+
+### Data Interface:
+```
+export interface AngularHeatMapData {
+  path: string;
+  windowHeight: number;
+  windowWidth: number;
+  movements: AngularHeatMapDataPoint[];
+}
+
+export interface AngularHeatMapDataPoint {
+  x: number;
+  y: number;
+}
+
+export interface AngularHeatMapTimedDataPoint extends AngularHeatMapDataPoint {
+  timestamp: number;
+}
+```
 
