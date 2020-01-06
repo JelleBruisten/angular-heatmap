@@ -1,4 +1,5 @@
 # AngularHeatmap
+Angular Heatmap is a library for collecting user data for heatmaps. The data collected will include on what route path the user is, such that we can make seperate heatmaps for each route.
 
 ## Running demo project:
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
