@@ -6,6 +6,13 @@
     "name": "Jelle Bruisten"
   },
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jellebruisten/angular-heatmap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JelleBruisten/angular-heatmap/issues"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -15,7 +22,6 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "~8.2.14",
     "@angular/common": "~8.2.14",
@@ -52,5 +58,10 @@
     "tsickle": "^0.37.0",
     "tslint": "~5.15.0",
     "typescript": "~3.5.3"
-  }
+  },
+  "keywords": [
+    "angular",
+    "heatmap",
+  ],
+  "license": "MIT"
 }
