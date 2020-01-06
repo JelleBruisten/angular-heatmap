@@ -9,16 +9,16 @@ import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map
 })
 export class AngularHeatMapService implements OnDestroy {
 
-  protected mouseMoveStream: Observable<Event>;
-  private mouseMoveSubscription: Subscription;
+  protected pointerMoveStream: Observable<Event>;
+  private pointerMoveSubscription: Subscription;
   protected resizeStream: Observable<Event>;
   private resizeSubscription: Subscription;
 
   protected currentRouterPath = '';
   protected windowHeight = 0;
   protected windowWidth = 0;
-  protected mouseX = -10;
-  protected mouseY = -10;
+  protected pointerX = -10;
+  protected pointerY = -10;
 
   protected currentHeatmap: AngularHeatMapData;
   protected currentHeatmapSubject: Subject<AngularHeatMapData> = new Subject<AngularHeatMapData>();
@@ -26,10 +26,8 @@ export class AngularHeatMapService implements OnDestroy {
   protected heatMapDataSubject: Subject<AngularHeatMapData[]> = new Subject<AngularHeatMapData[]>();
   protected timer: Observable<number>;
   protected timerSubscription: Subscription;
-  protected mouseLeaveStream: Observable<MouseEvent>;
-  protected mouseLeaveSubscription: Subscription;
-  protected mouseEnterStream: Observable<MouseEvent>;
-  protected mouseEnterSubscription: Subscription;
+  protected pointerLeaveStream: Observable<PointerEvent>;
+  protected pointerLeaveSubscription: Subscription;
   protected changeTimer = 0;
 
   public get heatMapData$() {
@@ -65,18 +63,18 @@ export class AngularHeatMapService implements OnDestroy {
       }
     });
 
-    // listen on mouse movements
-    this.mouseMoveStream = fromEvent<MouseEvent>(document, 'mousemove', {
+    // listen on pointer movements
+    this.pointerMoveStream = fromEvent<PointerEvent>(document, 'pointermove', {
       passive: true
     });
-    this.mouseMoveSubscription = this.mouseMoveStream
-    .subscribe((event: MouseEvent) => {
-      this.updateMousePosition(event);
+    this.pointerMoveSubscription = this.pointerMoveStream
+    .subscribe((event: PointerEvent) => {
+      this.updatePointerPosition(event);
     });
 
-    this.mouseLeaveStream = fromEvent<MouseEvent>(document, 'mouseleave');
-    this.mouseLeaveSubscription = this.mouseLeaveStream.subscribe(() => {
-      this.changeTimer = this.config.maxMouseTickWithoutChange;
+    this.pointerLeaveStream = fromEvent<PointerEvent>(document, 'pointerleave');
+    this.pointerLeaveSubscription = this.pointerLeaveStream.subscribe(() => {
+      this.changeTimer = this.config.maxPointerTickWithoutChange;
     });
 
     // listen on resize
@@ -87,9 +85,9 @@ export class AngularHeatMapService implements OnDestroy {
       this.updateWindowSize();
     });
 
-    this.timer = timer(0, this.config.mouseMovementsInterval);
+    this.timer = timer(0, this.config.pointerMovementsInterval);
     this.timerSubscription = this.timer.subscribe(() => {
-      if (this.changeTimer < this.config.maxMouseTickWithoutChange) {
+      if (this.changeTimer < this.config.maxPointerTickWithoutChange) {
         this.changeTimer++;
         this.addTrackingLog();
       }
@@ -112,10 +110,10 @@ export class AngularHeatMapService implements OnDestroy {
     this.updateHeatMapData();
   }
 
-  protected updateMousePosition(event: MouseEvent) {
+  protected updatePointerPosition(event: PointerEvent) {
     this.changeTimer = 0;
-    this.mouseX = event.pageX;
-    this.mouseY = event.pageY;
+    this.pointerX = event.pageX;
+    this.pointerY = event.pageY;
   }
 
   protected updateHeatMapData() {
@@ -141,14 +139,14 @@ export class AngularHeatMapService implements OnDestroy {
 
   protected addTrackingLog() {
     if (
-      this.mouseX > 0 &&
-      // this.windowWidth > this.mouseX &&
-      this.mouseY > 0
-      // this.windowHeight > this.mouseY
+      this.pointerX > 0 &&
+      // this.windowWidth > this.pointerX &&
+      this.pointerY > 0
+      // this.windowHeight > this.pointerY
     ) {
       this.currentHeatmap.movements.push({
-        x: this.mouseX,
-        y: this.mouseY
+        x: this.pointerX,
+        y: this.pointerY
       });
       this.update();
     }
@@ -160,9 +158,8 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.mouseMoveSubscription.unsubscribe();
+    this.pointerMoveSubscription.unsubscribe();
     this.resizeSubscription.unsubscribe();
-    this.mouseEnterSubscription.unsubscribe();
-    this.mouseLeaveSubscription.unsubscribe();
+    this.pointerLeaveSubscription.unsubscribe();
   }
 }

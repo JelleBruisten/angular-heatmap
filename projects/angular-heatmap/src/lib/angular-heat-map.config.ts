@@ -3,8 +3,8 @@ import { InjectionToken } from '@angular/core';
 export const ANGULAR_HEATMAP_CONFIG = new InjectionToken<AngularHeatMapConfig>('Angular Heatmap Configuration');
 
 export interface AngularHeatMapConfig {
-  mouseMovementsInterval?: number;
-  maxMouseTickWithoutChange?: number;
+  pointerMovementsInterval?: number;
+  maxPointerTickWithoutChange?: number;
   heatMapPointRadius?: number;
   heatMapPointRadiusBlur?: number;
   heatMapPointAlpha?: number;
@@ -17,8 +17,8 @@ export interface AngularHeatMapGradientColor {
 }
 
 export const defaultAngularHeatMapConfig: AngularHeatMapConfig = {
-  mouseMovementsInterval: 10,
-  maxMouseTickWithoutChange: 2,
+  pointerMovementsInterval: 10,
+  maxPointerTickWithoutChange: 2,
   heatMapPointRadius: 5,
   heatMapPointRadiusBlur: 25,
   heatMapPointAlpha: 0.5,
