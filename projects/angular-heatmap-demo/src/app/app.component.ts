@@ -29,7 +29,7 @@ export class AppComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if(this.currentHeatMapSubscription) {
+    if (this.currentHeatMapSubscription) {
       this.currentHeatMapSubscription.unsubscribe();
     }
   }

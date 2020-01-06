@@ -3,7 +3,7 @@
 ## Running demo project:
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Using the AngularHeatMapService
+## Adding the module
 Add the import in your appModule
 ```
 import { AngularHeatMapModule, ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfigFactory } from 'projects/angular-heatmap/src/public-api';
@@ -42,4 +42,34 @@ To provide a configuration for the module add a ANGULAR_HEATMAP_CONFIG to provid
     })
   }
 ```
+
+## Import the AngularHeatmapService
+In some component that's gonna listen or consume data produced by the AngularHeatMapService inject it the usual angular way:
+```
+  constructor(private service: AngularHeatMapService)
+```
+You can start to listen to updates from the subjects provided in this service:
+```
+   this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {     
+    console.log(data);
+  });
+
+  this.heatMapDataSubscription = this.service.heatMapData$.subscribe(data => {     
+    console.log(data);
+  });
+```
+
+Don't forget to unsubscribe
+```
+  ngOnDestroy() {
+    if (this.currentHeatMapSubscription) {
+      this.currentHeatMapSubscription.unsubscribe();
+    }
+
+    if (this.heatMapDataSubscription) {
+      this.heatMapDataSubscription.unsubscribe();
+    }    
+  }
+```
+
 
