@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.service.initialize();
+    this.service.start();
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
       this.data = { ...data };
     });

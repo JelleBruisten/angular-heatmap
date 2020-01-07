@@ -48,7 +48,7 @@ export class AngularHeatMapService implements OnDestroy {
   ) {
   }
 
-  public initialize(): void {
+  public start(): void {
 
     // init sizes
     this.windowHeight = window.outerHeight;
@@ -201,10 +201,10 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.uninitialize();
+    this.stop();
   }
 
-  public uninitialize() {
+  public stop() {
     if (this.pointerMoveSubscription) {
       this.pointerMoveSubscription.unsubscribe();
       this.pointerMoveSubscription = undefined;

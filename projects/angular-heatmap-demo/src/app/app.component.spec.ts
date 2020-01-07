@@ -31,7 +31,7 @@ describe('AppComponent', () => {
 
 
   afterEach(() => {
-    service.uninitialize();
+    service.stop();
   });
 
   it('should create the app', () => {
@@ -39,8 +39,8 @@ describe('AppComponent', () => {
   });
 
   it('ngOnInit should call initialize on heatmapservice', () => {
-    spyOn(service, 'initialize');
+    spyOn(service, 'start');
     component.ngOnInit();
-    expect(service.initialize).toHaveBeenCalled();
+    expect(service.start).toHaveBeenCalled();
   });
 });
