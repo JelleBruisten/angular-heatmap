@@ -52,7 +52,7 @@ In some component that's gonna listen or consume data produced by the AngularHea
 
 ### Start the listeners
 ```
-service.initialize();
+service.start();
 ```
 
 You can start to listen to updates from the subjects provided in this service:
@@ -70,7 +70,10 @@ You can start to listen to updates from the subjects provided in this service:
 Don't forget to unsubscribe from subscriptions, and if you want to stop all event listeners just call service.stop()
 ```
   ngOnDestroy() {  
+  
+    // only if you want to stop tracking of pointer events
     service.stop();
+    
     if (this.currentHeatMapSubscription) {
       this.currentHeatMapSubscription.unsubscribe();
     }
