@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Inject, ViewChild } from '@angular/core';
+import { Component, OnDestroy, Inject, ViewChild, OnInit } from '@angular/core';
 import {
   AngularHeatMapData,
   AngularHeatMapService,
@@ -12,18 +12,21 @@ import { Subscription } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnInit, OnDestroy {
 
   data: AngularHeatMapData;
   currentHeatMapSubscription: Subscription;
   @ViewChild(AngularHeatMapDirective, {static: false}) angularHeatMap: AngularHeatMapDirective;
 
-  constructor(private service: AngularHeatMapService, @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig) {
+  constructor(
+    private service: AngularHeatMapService,
+    @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig
+  ) {}
 
+  ngOnInit() {
     this.service.initialize();
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
       this.data = { ...data };
-      console.log('data changed!', data);
     });
   }
 

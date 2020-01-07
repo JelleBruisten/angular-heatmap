@@ -102,7 +102,9 @@ export class AngularHeatMapDirective implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnDestroy() {
-    this.scrolEventSubscription.unsubscribe();
+    if (this.scrolEventSubscription) {
+      this.scrolEventSubscription.unsubscribe();
+    }
   }
 
   createGradiant() {

@@ -4,7 +4,6 @@ import { AngularHeatMapService } from './angular-heat-map.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ANGULAR_HEATMAP_CONFIG, defaultAngularHeatMapConfig } from '../public-api';
 import { isObservable } from 'rxjs';
-import { AngularHeatMapData } from './angular-heat-map-data';
 
 describe('AngularHeatmapService', () => {
 
@@ -12,9 +11,10 @@ describe('AngularHeatmapService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports : [
-        RouterTestingModule
+        RouterTestingModule,
       ],
       providers: [
+        AngularHeatMapService,
         {
           provide: ANGULAR_HEATMAP_CONFIG,
           useValue: defaultAngularHeatMapConfig
