@@ -9,26 +9,32 @@ import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map
 })
 export class AngularHeatMapService implements OnDestroy {
 
-  protected pointerMoveStream: Observable<Event>;
-  private pointerMoveSubscription: Subscription;
-  protected resizeStream: Observable<Event>;
-  private resizeSubscription: Subscription;
-
+  /**
+   * Initial datapoints
+   */
   protected currentRouterPath = '';
   protected windowHeight = 0;
   protected windowWidth = 0;
   protected pointerX = -10;
   protected pointerY = -10;
+  protected changeTimer = 0;
 
+  /**
+   * Subscriptions
+   */
+  private pointerMoveSubscription: Subscription;
+  private pointerLeaveSubscription: Subscription;
+  private resizeSubscription: Subscription;
+  private timerSubscription: Subscription;
+  private routerEventsSubscription: Subscription;
+
+  /**
+   * Heatmap data structure and observables
+   */
   protected currentHeatmap: AngularHeatMapData;
   protected currentHeatmapSubject: Subject<AngularHeatMapData> = new Subject<AngularHeatMapData>();
   protected heatMapData: AngularHeatMapData[] = [];
   protected heatMapDataSubject: Subject<AngularHeatMapData[]> = new Subject<AngularHeatMapData[]>();
-  protected timer: Observable<number>;
-  protected timerSubscription: Subscription;
-  protected pointerLeaveStream: Observable<PointerEvent>;
-  protected pointerLeaveSubscription: Subscription;
-  protected changeTimer = 0;
 
   public get heatMapData$() {
     return this.heatMapDataSubject.asObservable();
@@ -42,60 +48,80 @@ export class AngularHeatMapService implements OnDestroy {
     @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
     private router: Router
   ) {
+  }
+
+  public initialize() {
+
+    // init sizes
+    this.windowHeight = window.outerHeight;
+    this.windowWidth = window.outerWidth;
 
     this.updateHeatMapData();
 
     // listen on router events
     let path = '';
-    this.router.events.subscribe((event: RouterEvent) => {
-      if (event instanceof ActivationEnd) {
-        if (event.snapshot) {
-            if (event.snapshot.routeConfig && event.snapshot.routeConfig.path) {
-                path = path === '' ? event.snapshot.routeConfig.path : [event.snapshot.routeConfig.path, path].join('/');
-            }
-        }
-      }
 
-      if (event instanceof NavigationEnd) {
-        this.currentRouterPath = path;
-        path = '';
-        this.updateHeatMapData();
-      }
-    });
+    if (!this.routerEventsSubscription) {
+      this.routerEventsSubscription = this.router.events.subscribe((event: RouterEvent) => {
+        if (event instanceof ActivationEnd) {
+          if (event.snapshot) {
+              if (event.snapshot.routeConfig && event.snapshot.routeConfig.path) {
+                  path = path === '' ? event.snapshot.routeConfig.path : [event.snapshot.routeConfig.path, path].join('/');
+              }
+          }
+        }
+
+        if (event instanceof NavigationEnd) {
+          this.currentRouterPath = path;
+          path = '';
+          this.updateHeatMapData();
+        }
+      });
+    }
 
     // listen on pointer movements
-    this.pointerMoveStream = fromEvent<PointerEvent>(document, 'pointermove', {
-      passive: true
-    });
-    this.pointerMoveSubscription = this.pointerMoveStream
-    .subscribe((event: PointerEvent) => {
-      this.updatePointerPosition(event);
-    });
+    if (!this.pointerMoveSubscription) {
+      this.pointerMoveSubscription = fromEvent<PointerEvent>(
+          document,
+          'pointermove',
+          { passive: true }
+        ).subscribe((event: PointerEvent) => {
+          this.updatePointerPosition(event);
+      });
+    }
 
-    this.pointerLeaveStream = fromEvent<PointerEvent>(document, 'pointerleave');
-    this.pointerLeaveSubscription = this.pointerLeaveStream.subscribe(() => {
-      this.changeTimer = this.config.maxPointerTickWithoutChange;
-    });
+    if (!this.pointerLeaveSubscription) {
+      this.pointerLeaveSubscription = fromEvent<PointerEvent>(
+          document,
+          'pointerleave',
+          { passive: true }
+        ).subscribe(() => {
+          this.changeTimer = this.config.maxPointerTickWithoutChange;
+      });
+    }
 
     // listen on resize
-    this.resizeStream = fromEvent(window, 'resize', {
-      passive: true
-    });
-    this.resizeSubscription = this.resizeStream.subscribe((event) => {
-      this.updateWindowSize();
-    });
+    if (!this.resizeStream) {
+      this.resizeSubscription = fromEvent(
+          window,
+          'resize',
+          { passive: true }
+        ).subscribe(() => {
+        this.updateWindowSize();
+      });
+    }
 
-    this.timer = timer(0, this.config.pointerMovementsInterval);
-    this.timerSubscription = this.timer.subscribe(() => {
-      if (this.changeTimer < this.config.maxPointerTickWithoutChange) {
-        this.changeTimer++;
-        this.addTrackingLog();
-      }
-    });
-
-    // init sizes
-    this.windowHeight = window.outerHeight;
-    this.windowWidth = window.outerWidth;
+    if (!this.timerSubscription) {
+      this.timerSubscription = timer(
+        0,
+        this.config.pointerMovementsInterval
+      ).subscribe(() => {
+        if (this.changeTimer < this.config.maxPointerTickWithoutChange) {
+          this.changeTimer++;
+          this.addTrackingLog();
+        }
+      });
+    }
   }
 
   protected findTrackingObject(): AngularHeatMapData | undefined {
@@ -137,6 +163,11 @@ export class AngularHeatMapService implements OnDestroy {
     this.currentHeatmap = newTrackingObject;
   }
 
+  protected clearData() {
+    this.heatMapData = [];
+    this.createHeatMapData();
+  }
+
   protected addTrackingLog() {
     if (
       this.pointerX > 0 &&
@@ -168,8 +199,30 @@ export class AngularHeatMapService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.pointerMoveSubscription.unsubscribe();
-    this.resizeSubscription.unsubscribe();
-    this.pointerLeaveSubscription.unsubscribe();
+
+    if (this.pointerMoveSubscription) {
+      this.pointerMoveSubscription.unsubscribe();
+      this.pointerMoveSubscription = undefined;
+    }
+
+    if (this.pointerLeaveSubscription) {
+      this.pointerLeaveSubscription.unsubscribe();
+      this.pointerLeaveSubscription = undefined;
+    }
+
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+      this.resizeSubscription = undefined;
+    }
+
+    if (this.routerEventsSubscription) {
+      this.routerEventsSubscription.unsubscribe();
+      this.routerEventsSubscription = undefined;
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = undefined;
+    }
   }
 }
