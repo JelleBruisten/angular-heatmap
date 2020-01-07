@@ -49,6 +49,12 @@ In some component that's gonna listen or consume data produced by the AngularHea
 ```
   constructor(private service: AngularHeatMapService)
 ```
+
+### Start the listeners
+```
+service.initialize();
+```
+
 You can start to listen to updates from the subjects provided in this service:
 ```
    this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {     
@@ -60,9 +66,11 @@ You can start to listen to updates from the subjects provided in this service:
   });
 ```
 
-Don't forget to unsubscribe
+### onDestroy()
+Don't forget to unsubscribe from subscriptions, and if you want to stop all event listeners just call service.stop()
 ```
-  ngOnDestroy() {
+  ngOnDestroy() {  
+    service.stop();
     if (this.currentHeatMapSubscription) {
       this.currentHeatMapSubscription.unsubscribe();
     }
