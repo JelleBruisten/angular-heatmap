@@ -1,9 +1,10 @@
-import { Component, OnDestroy, Inject } from '@angular/core';
+import { Component, OnDestroy, Inject, ViewChild } from '@angular/core';
 import {
   AngularHeatMapData,
   AngularHeatMapService,
   AngularHeatMapConfig,
-  ANGULAR_HEATMAP_CONFIG} from 'projects/angular-heatmap/src/public-api';
+  ANGULAR_HEATMAP_CONFIG,
+  AngularHeatMapDirective} from 'projects/angular-heatmap/src/public-api';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -15,9 +16,11 @@ export class AppComponent implements OnDestroy {
 
   data: AngularHeatMapData;
   currentHeatMapSubscription: Subscription;
-  // @ViewChild(AngularHeatMapDirective, {static: false}) angularHeatMap: AngularHeatMapDirective;
+  @ViewChild(AngularHeatMapDirective, {static: false}) angularHeatMap: AngularHeatMapDirective;
 
   constructor(private service: AngularHeatMapService, @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig) {
+
+    this.service.initialize();
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
       this.data = { ...data };
       console.log('data changed!', data);

@@ -4,9 +4,7 @@ import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
 import { AngularHeatMapData, AngularHeatMapTimedDataPoint } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AngularHeatMapService implements OnDestroy {
 
   /**
@@ -36,11 +34,11 @@ export class AngularHeatMapService implements OnDestroy {
   protected heatMapData: AngularHeatMapData[] = [];
   protected heatMapDataSubject: Subject<AngularHeatMapData[]> = new Subject<AngularHeatMapData[]>();
 
-  public get heatMapData$() {
+  public get heatMapData$(): Observable<AngularHeatMapData[]> {
     return this.heatMapDataSubject.asObservable();
   }
 
-  public get currentHeatMap$() {
+  public get currentHeatMap$(): Observable<AngularHeatMapData> {
     return this.currentHeatmapSubject.asObservable();
   }
 
@@ -50,11 +48,15 @@ export class AngularHeatMapService implements OnDestroy {
   ) {
   }
 
-  public initialize() {
+  public initialize(): void {
 
     // init sizes
     this.windowHeight = window.outerHeight;
     this.windowWidth = window.outerWidth;
+    this.currentRouterPath = '';
+    this.pointerX = -10;
+    this.pointerY = -10;
+    this.changeTimer = 0;
 
     this.updateHeatMapData();
 
@@ -101,7 +103,7 @@ export class AngularHeatMapService implements OnDestroy {
     }
 
     // listen on resize
-    if (!this.resizeStream) {
+    if (!this.resizeSubscription) {
       this.resizeSubscription = fromEvent(
           window,
           'resize',
@@ -130,19 +132,19 @@ export class AngularHeatMapService implements OnDestroy {
     });
   }
 
-  protected updateWindowSize() {
+  protected updateWindowSize(): void {
     this.windowHeight = window.outerHeight;
     this.windowWidth = window.outerWidth;
     this.updateHeatMapData();
   }
 
-  protected updatePointerPosition(event: PointerEvent) {
+  protected updatePointerPosition(event: PointerEvent): void {
     this.changeTimer = 0;
     this.pointerX = event.pageX;
     this.pointerY = event.pageY;
   }
 
-  protected updateHeatMapData() {
+  protected updateHeatMapData(): void {
     const currentTrackingObject = this.findTrackingObject();
     if (currentTrackingObject) {
       this.currentHeatmap = currentTrackingObject;
@@ -152,7 +154,7 @@ export class AngularHeatMapService implements OnDestroy {
     this.update();
   }
 
-  protected createHeatMapData() {
+  protected createHeatMapData(): void {
     const newTrackingObject: AngularHeatMapData = {
       windowHeight: this.windowHeight,
       windowWidth: this.windowWidth,
@@ -163,12 +165,12 @@ export class AngularHeatMapService implements OnDestroy {
     this.currentHeatmap = newTrackingObject;
   }
 
-  protected clearData() {
+  protected clearData(): void {
     this.heatMapData = [];
     this.createHeatMapData();
   }
 
-  protected addTrackingLog() {
+  protected addTrackingLog(): void {
     if (
       this.pointerX > 0 &&
       // this.windowWidth > this.pointerX &&
@@ -193,13 +195,16 @@ export class AngularHeatMapService implements OnDestroy {
     }
   }
 
-  protected update() {
+  protected update(): void {
     this.heatMapDataSubject.next([ ... this.heatMapData ]);
     this.currentHeatmapSubject.next({ ...this.currentHeatmap });
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
+    this.uninitialize();
+  }
 
+  public uninitialize() {
     if (this.pointerMoveSubscription) {
       this.pointerMoveSubscription.unsubscribe();
       this.pointerMoveSubscription = undefined;
