@@ -18,7 +18,6 @@ export class HeatmapViewerComponent implements OnDestroy {
     console.log(this.config);
     this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
       this.data = { ...data };
-      // console.log('data changed!', data);
     });
   }
 
