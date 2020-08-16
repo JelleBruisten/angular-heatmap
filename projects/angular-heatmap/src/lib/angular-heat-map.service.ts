@@ -1,40 +1,44 @@
 import { Injectable, OnDestroy, Inject } from '@angular/core';
 import { ActivationEnd, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
-import { AngularHeatMapData } from './angular-heat-map-data';
+import { AngularHeatMapData, AngularHeatMapTimedDataPoint } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
 @Injectable()
 export class AngularHeatMapService implements OnDestroy {
 
-  protected mouseMoveStream: Observable<Event>;
-  private mouseMoveSubscription: Subscription;
-  protected resizeStream: Observable<Event>;
-  private resizeSubscription: Subscription;
-
+  /**
+   * Initial datapoints
+   */
   protected currentRouterPath = '';
   protected windowHeight = 0;
   protected windowWidth = 0;
-  protected mouseX = -10;
-  protected mouseY = -10;
+  protected pointerX = -10;
+  protected pointerY = -10;
+  protected changeTimer = 0;
 
+  /**
+   * Subscriptions
+   */
+  private pointerMoveSubscription: Subscription;
+  private pointerLeaveSubscription: Subscription;
+  private resizeSubscription: Subscription;
+  private timerSubscription: Subscription;
+  private routerEventsSubscription: Subscription;
+
+  /**
+   * Heatmap data structure and observables
+   */
   protected currentHeatmap: AngularHeatMapData;
   protected currentHeatmapSubject: Subject<AngularHeatMapData> = new Subject<AngularHeatMapData>();
   protected heatMapData: AngularHeatMapData[] = [];
   protected heatMapDataSubject: Subject<AngularHeatMapData[]> = new Subject<AngularHeatMapData[]>();
-  protected timer: Observable<number>;
-  protected timerSubscription: Subscription;
-  protected mouseLeaveStream: Observable<MouseEvent>;
-  protected mouseLeaveSubscription: Subscription;
-  protected mouseEnterStream: Observable<MouseEvent>;
-  protected mouseEnterSubscription: Subscription;
-  protected changeTimer = 0;
 
-  public get heatMapData$() {
+  public get heatMapData$(): Observable<AngularHeatMapData[]> {
     return this.heatMapDataSubject.asObservable();
   }
 
-  public get currentHeatMap$() {
+  public get currentHeatMap$(): Observable<AngularHeatMapData> {
     return this.currentHeatmapSubject.asObservable();
   }
 
@@ -42,60 +46,84 @@ export class AngularHeatMapService implements OnDestroy {
     @Inject(ANGULAR_HEATMAP_CONFIG) private config: AngularHeatMapConfig,
     private router: Router
   ) {
+  }
+
+  public start(): void {
+
+    // init sizes
+    this.windowHeight = window.outerHeight;
+    this.windowWidth = window.outerWidth;
+    this.currentRouterPath = '';
+    this.pointerX = -10;
+    this.pointerY = -10;
+    this.changeTimer = 0;
 
     this.updateHeatMapData();
 
     // listen on router events
     let path = '';
-    this.router.events.subscribe((event: RouterEvent) => {
-      if (event instanceof ActivationEnd) {
-        if (event.snapshot) {
-            if (event.snapshot.routeConfig && event.snapshot.routeConfig.path) {
-                path = path === '' ? event.snapshot.routeConfig.path : [event.snapshot.routeConfig.path, path].join('/');
-            }
+
+    if (!this.routerEventsSubscription) {
+      this.routerEventsSubscription = this.router.events.subscribe((event: RouterEvent) => {
+        if (event instanceof ActivationEnd) {
+          if (event.snapshot) {
+              if (event.snapshot.routeConfig && event.snapshot.routeConfig.path) {
+                  path = path === '' ? event.snapshot.routeConfig.path : [event.snapshot.routeConfig.path, path].join('/');
+              }
+          }
         }
-      }
 
-      if (event instanceof NavigationEnd) {
-        this.currentRouterPath = path;
-        path = '';
-        this.updateHeatMapData();
-      }
-    });
+        if (event instanceof NavigationEnd) {
+          this.currentRouterPath = path;
+          path = '';
+          this.updateHeatMapData();
+        }
+      });
+    }
 
-    // listen on mouse movements
-    this.mouseMoveStream = fromEvent<MouseEvent>(document, 'mousemove', {
-      passive: true
-    });
-    this.mouseMoveSubscription = this.mouseMoveStream
-    .subscribe((event: MouseEvent) => {
-      this.updateMousePosition(event);
-    });
+    // listen on pointer movements
+    if (!this.pointerMoveSubscription) {
+      this.pointerMoveSubscription = fromEvent<PointerEvent>(
+          document,
+          'pointermove',
+          { passive: true }
+        ).subscribe((event: PointerEvent) => {
+          this.updatePointerPosition(event);
+      });
+    }
 
-    this.mouseLeaveStream = fromEvent<MouseEvent>(document, 'mouseleave');
-    this.mouseLeaveSubscription = this.mouseLeaveStream.subscribe(() => {
-      this.changeTimer = this.config.maxMouseTickWithoutChange;
-    });
+    if (!this.pointerLeaveSubscription) {
+      this.pointerLeaveSubscription = fromEvent<PointerEvent>(
+          document,
+          'pointerleave',
+          { passive: true }
+        ).subscribe(() => {
+          this.changeTimer = this.config.maxPointerTickWithoutChange;
+      });
+    }
 
     // listen on resize
-    this.resizeStream = fromEvent(window, 'resize', {
-      passive: true
-    });
-    this.resizeSubscription = this.resizeStream.subscribe((event) => {
-      this.updateWindowSize();
-    });
+    if (!this.resizeSubscription) {
+      this.resizeSubscription = fromEvent(
+          window,
+          'resize',
+          { passive: true }
+        ).subscribe(() => {
+        this.updateWindowSize();
+      });
+    }
 
-    this.timer = timer(0, this.config.mouseMovementsInterval);
-    this.timerSubscription = this.timer.subscribe(() => {
-      if (this.changeTimer < this.config.maxMouseTickWithoutChange) {
-        this.changeTimer++;
-        this.addTrackingLog();
-      }
-    });
-
-    // init sizes
-    this.windowHeight = window.outerHeight;
-    this.windowWidth = window.outerWidth;
+    if (!this.timerSubscription) {
+      this.timerSubscription = timer(
+        0,
+        this.config.pointerMovementsInterval
+      ).subscribe(() => {
+        if (this.changeTimer < this.config.maxPointerTickWithoutChange) {
+          this.changeTimer++;
+          this.addTrackingLog();
+        }
+      });
+    }
   }
 
   protected findTrackingObject(): AngularHeatMapData | undefined {
@@ -104,19 +132,19 @@ export class AngularHeatMapService implements OnDestroy {
     });
   }
 
-  protected updateWindowSize() {
+  protected updateWindowSize(): void {
     this.windowHeight = window.outerHeight;
     this.windowWidth = window.outerWidth;
     this.updateHeatMapData();
   }
 
-  protected updateMousePosition(event: MouseEvent) {
+  protected updatePointerPosition(event: PointerEvent): void {
     this.changeTimer = 0;
-    this.mouseX = event.pageX;
-    this.mouseY = event.pageY;
+    this.pointerX = event.pageX;
+    this.pointerY = event.pageY;
   }
 
-  protected updateHeatMapData() {
+  protected updateHeatMapData(): void {
     const currentTrackingObject = this.findTrackingObject();
     if (currentTrackingObject) {
       this.currentHeatmap = currentTrackingObject;
@@ -126,7 +154,7 @@ export class AngularHeatMapService implements OnDestroy {
     this.update();
   }
 
-  protected createHeatMapData() {
+  protected createHeatMapData(): void {
     const newTrackingObject: AngularHeatMapData = {
       windowHeight: this.windowHeight,
       windowWidth: this.windowWidth,
@@ -137,17 +165,32 @@ export class AngularHeatMapService implements OnDestroy {
     this.currentHeatmap = newTrackingObject;
   }
 
-  protected addTrackingLog() {
+  protected clearData(): void {
+    this.heatMapData = [];
+    this.createHeatMapData();
+  }
+
+  protected addTrackingLog(): void {
     if (
-      this.mouseX > 0 &&
-      // this.windowWidth > this.mouseX &&
-      this.mouseY > 0
-      // this.windowHeight > this.mouseY
+      this.pointerX > 0 &&
+      // this.windowWidth > this.pointerX &&
+      this.pointerY > 0
+      // this.windowHeight > this.pointerY
     ) {
-      this.currentHeatmap.movements.push({
-        x: this.mouseX,
-        y: this.mouseY
-      });
+
+      if (this.config.pointerMovementsIncludeTimestamp) {
+        const p: AngularHeatMapTimedDataPoint = {
+          x: this.pointerX,
+          y: this.pointerY,
+          timestamp : new Date().getTime()
+        };
+        this.currentHeatmap.movements.push(p);
+      } else {
+        this.currentHeatmap.movements.push({
+          x: this.pointerX,
+          y: this.pointerY
+        });
+      }
       this.update();
     }
   }
@@ -157,10 +200,34 @@ export class AngularHeatMapService implements OnDestroy {
     this.currentHeatmapSubject.next({ ...this.currentHeatmap });
   }
 
-  ngOnDestroy() {
-    this.mouseMoveSubscription.unsubscribe();
-    this.resizeSubscription.unsubscribe();
-    this.mouseEnterSubscription.unsubscribe();
-    this.mouseLeaveSubscription.unsubscribe();
+  public ngOnDestroy() {
+    this.stop();
+  }
+
+  public stop() {
+    if (this.pointerMoveSubscription) {
+      this.pointerMoveSubscription.unsubscribe();
+      this.pointerMoveSubscription = undefined;
+    }
+
+    if (this.pointerLeaveSubscription) {
+      this.pointerLeaveSubscription.unsubscribe();
+      this.pointerLeaveSubscription = undefined;
+    }
+
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+      this.resizeSubscription = undefined;
+    }
+
+    if (this.routerEventsSubscription) {
+      this.routerEventsSubscription.unsubscribe();
+      this.routerEventsSubscription = undefined;
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+      this.timerSubscription = undefined;
+    }
   }
 }

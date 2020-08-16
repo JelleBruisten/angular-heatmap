@@ -1,27 +1,117 @@
 # AngularHeatmap
+Angular Heatmap is a library for collecting user data for heatmaps. The data collected will include on what route path the user is, such that we can make seperate heatmaps for each route.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.19.
+## Running demo project:
+Run `ng serve --project=angular-heatmap-demo`
 
-## Development server
+## Adding the module
+Add the import in your appModule
+```
+import { AngularHeatMapModule, ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfigFactory } from 'projects/angular-heatmap/src/public-api';
+```
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Add the imported module to your ngModule:
+```
+@NgModule({
+  declarations: [
+    ...
+  ],
+  imports: [
+    ...
+    AngularHeatMapModule.forRoot()
+  ]
+})
+```
 
-## Code scaffolding
+To provide a configuration for the module add a ANGULAR_HEATMAP_CONFIG to providers of ngModule
+```
+  {
+    provide: ANGULAR_HEATMAP_CONFIG,
+    useValue: AngularHeatMapConfigFactory({
+      heatMapPointRadiusBlur : 25,
+      heatMapPointRadius : 5,
+      heatMapPointAlpha: 0.5,
+      pointerMovementsInterval: 10,
+      heatMapGradientColors: [
+        { offset : 0.4, color: 'blue' },
+        { offset : 0.6, color: 'cyan' },
+        { offset : 0.7, color: 'lime' },
+        { offset : 0.8, color: 'yellow' },
+        { offset : 0.9, color: 'orange' },
+        { offset : 1,   color: 'red' }
+      ]
+    })
+  }
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Import the AngularHeatmapService
+In some component that's gonna listen or consume data produced by the AngularHeatMapService inject it the usual angular way:
+```
+  constructor(private service: AngularHeatMapService)
+```
 
-## Build
+### Start the listeners
+```
+service.start();
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+You can start to listen to updates from the subjects provided in this service:
+```
+   this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {     
+    console.log(data);
+  });
 
-## Running unit tests
+  this.heatMapDataSubscription = this.service.heatMapData$.subscribe(data => {     
+    console.log(data);
+  });
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### onDestroy()
+Don't forget to unsubscribe from subscriptions, and if you want to stop all event listeners just call service.stop()
+```
+  ngOnDestroy() {  
+  
+    // only if you want to stop tracking of pointer events
+    service.stop();
+    
+    if (this.currentHeatMapSubscription) {
+      this.currentHeatMapSubscription.unsubscribe();
+    }
 
-## Running end-to-end tests
+    if (this.heatMapDataSubscription) {
+      this.heatMapDataSubscription.unsubscribe();
+    }    
+  }
+```
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+## Data format:
+The produced data will always be in the form:
+### path will be constructed from router events
+url of example.com/user/edit/12398290380293 and a path in route configuration : /user/edit/:id
+path will be filed with /user/edit/:id
 
-## Further help
+### Movements:
+Movements will be in format of {x: number, y: number}
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+To include timestamps in every move add the following to the configuration:
+pointerMovementsIncludeTimestamp : true
+
+### Data Interface:
+```
+export interface AngularHeatMapData {
+  path: string;
+  windowHeight: number;
+  windowWidth: number;
+  movements: AngularHeatMapDataPoint[];
+}
+
+export interface AngularHeatMapDataPoint {
+  x: number;
+  y: number;
+}
+
+export interface AngularHeatMapTimedDataPoint extends AngularHeatMapDataPoint {
+  timestamp: number;
+}
+```
+

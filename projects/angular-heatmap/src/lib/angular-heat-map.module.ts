@@ -23,6 +23,7 @@ export class AngularHeatMapModule {
     return {
       ngModule: AngularHeatMapModule,
       providers: [
+        AngularHeatMapService,
         {
           provide: ANGULAR_HEATMAP_CONFIG,
           useValue: defaultAngularHeatMapConfig

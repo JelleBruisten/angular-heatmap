@@ -9,3 +9,7 @@ export interface AngularHeatMapDataPoint {
   x: number;
   y: number;
 }
+
+export interface AngularHeatMapTimedDataPoint extends AngularHeatMapDataPoint {
+  timestamp: number;
+}
