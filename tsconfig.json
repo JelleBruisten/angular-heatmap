@@ -18,6 +18,12 @@
     },
     {
       "path": "./projects/angular-heatmap-demo/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/angular-heatmap-tour-of-heroes/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/angular-heatmap-tour-of-heroes/tsconfig.spec.json"
     }
   ]
 }
