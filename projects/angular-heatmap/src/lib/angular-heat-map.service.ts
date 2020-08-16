@@ -4,9 +4,7 @@ import { Observable, Subscription, Subject, fromEvent, timer } from 'rxjs';
 import { AngularHeatMapData } from './angular-heat-map-data';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from './angular-heat-map.config';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AngularHeatMapService implements OnDestroy {
 
   protected mouseMoveStream: Observable<Event>;
