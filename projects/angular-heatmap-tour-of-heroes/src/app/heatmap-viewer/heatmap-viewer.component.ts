@@ -1,19 +1,13 @@
-import { Component, OnDestroy, Inject, ViewChild } from '@angular/core';
-import {
-  AngularHeatMapData,
-  AngularHeatMapService,
-  AngularHeatMapConfig,
-  ANGULAR_HEATMAP_CONFIG,
-  AngularHeatMapDirective
-} from 'projects/angular-heatmap/src/public-api';
+import { Component, OnInit, OnDestroy, ViewChild, Inject } from '@angular/core';
+import { AngularHeatMapData, AngularHeatMapDirective, AngularHeatMapService, ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfig } from 'projects/angular-heatmap/src/public-api';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: 'app-heatmap-viewer',
+  templateUrl: './heatmap-viewer.component.html',
+  styleUrls: ['./heatmap-viewer.component.css']
 })
-export class AppComponent implements OnDestroy {
+export class HeatmapViewerComponent implements OnDestroy {
 
   data: AngularHeatMapData;
   currentHeatMapSubscription: Subscription;

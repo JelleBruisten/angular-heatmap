@@ -154,7 +154,7 @@ export class AngularHeatMapService implements OnDestroy {
     }
   }
 
-  protected update() {
+  public update() {
     this.heatMapDataSubject.next([ ... this.heatMapData ]);
     this.currentHeatmapSubject.next({ ...this.currentHeatmap });
   }
