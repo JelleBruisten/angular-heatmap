@@ -39,7 +39,7 @@ import { LongPageComponent } from './long-page/long-page.component';
         heatMapPointRadiusBlur : 25,
         heatMapPointRadius : 5,
         heatMapPointAlpha: 0.5,
-        mouseMovementsInterval: 10,
+        pointerMovementsInterval: 10,
         heatMapGradientColors: [
           { offset : 0.4, color: 'blue' },
           { offset : 0.6, color: 'cyan' },
