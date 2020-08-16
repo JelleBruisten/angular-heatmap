@@ -17,7 +17,7 @@ export class AppComponent implements OnDestroy {
 
   data: AngularHeatMapData;
   currentHeatMapSubscription: Subscription;
-  @ViewChild(AngularHeatMapDirective, {static: false}) angularHeatMap: AngularHeatMapDirective;
+  @ViewChild(AngularHeatMapDirective) angularHeatMap: AngularHeatMapDirective;
 
   constructor(private service: AngularHeatMapService, @Inject(ANGULAR_HEATMAP_CONFIG) public config: AngularHeatMapConfig) {
 
