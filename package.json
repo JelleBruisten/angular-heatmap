@@ -5,7 +5,7 @@
     "email": "jelle_bruisten@hotmail.com",
     "name": "Jelle Bruisten"
   },
-  "version": "0.1.0",
+  "version": "0.1.5",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
