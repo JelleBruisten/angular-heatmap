@@ -5,7 +5,11 @@
     "email": "jelle_bruisten@hotmail.com",
     "name": "Jelle Bruisten"
   },
-  "version": "0.1.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JelleBruisten/angular-heatmap.git"
+  },
+  "version": "0.1.6",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
