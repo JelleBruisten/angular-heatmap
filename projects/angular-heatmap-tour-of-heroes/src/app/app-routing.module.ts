@@ -1,3 +1,4 @@
+import { LongPageComponent } from './long-page/long-page.component';
 import { HeatmapConfigComponent } from './heatmap-config/heatmap-config.component';
 
 import { NgModule } from '@angular/core';
@@ -14,7 +15,8 @@ const routes: Routes = [
   { path: 'detail/:id', component: HeroDetailComponent },
   { path: 'heroes', component: HeroesComponent },
   { path: 'messages', component: MessagesComponent },
-  { path: 'config', component: HeatmapConfigComponent }
+  { path: 'config', component: HeatmapConfigComponent },
+  { path: 'longpage', component: LongPageComponent },
 ];
 
 @NgModule({

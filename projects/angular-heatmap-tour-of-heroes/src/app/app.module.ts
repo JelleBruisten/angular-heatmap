@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { ANGULAR_HEATMAP_CONFIG, AngularHeatMapConfigFactory, AngularHeatMapModule } from 'projects/angular-heatmap/src/public-api';
 import { HeatmapViewerComponent } from './heatmap-viewer/heatmap-viewer.component';
 import { HeatmapConfigComponent } from './heatmap-config/heatmap-config.component';
+import { LongPageComponent } from './long-page/long-page.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { HeatmapConfigComponent } from './heatmap-config/heatmap-config.componen
     HeroDetailComponent,
     MessagesComponent,
     HeatmapViewerComponent,
-    HeatmapConfigComponent
+    HeatmapConfigComponent,
+    LongPageComponent
   ],
   bootstrap: [ AppComponent, HeatmapViewerComponent ],
   providers: [
