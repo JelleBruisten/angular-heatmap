@@ -14,13 +14,13 @@
           "options": {
             "tsConfig": "projects/angular-heatmap/tsconfig.lib.json",
             "project": "projects/angular-heatmap/ng-package.json"
-          }
-        ,          "configurations": {
+          },
+          "configurations": {
             "production": {
               "tsConfig": "projects/angular-heatmap/tsconfig.lib.prod.json"
             }
           }
-},
+        },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
@@ -39,127 +39,6 @@
             "exclude": [
               "**/node_modules/**"
             ]
-          }
-        }
-      }
-    },
-    "angular-heatmap-demo": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "projects/angular-heatmap-demo",
-      "sourceRoot": "projects/angular-heatmap-demo/src",
-      "prefix": "app",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/angular-heatmap-demo",
-            "index": "projects/angular-heatmap-demo/src/index.html",
-            "main": "projects/angular-heatmap-demo/src/main.ts",
-            "polyfills": "projects/angular-heatmap-demo/src/polyfills.ts",
-            "tsConfig": "projects/angular-heatmap-demo/tsconfig.app.json",
-            "aot": true,
-            "assets": [
-              "projects/angular-heatmap-demo/src/favicon.ico",
-              "projects/angular-heatmap-demo/src/assets"
-            ],
-            "styles": [
-              "projects/angular-heatmap-demo/src/styles.scss"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "projects/angular-heatmap-demo/src/environments/environment.ts",
-                  "with": "projects/angular-heatmap-demo/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "angular-heatmap-demo:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "angular-heatmap-demo:build:production"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "angular-heatmap-demo:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/angular-heatmap-demo/src/test.ts",
-            "polyfills": "projects/angular-heatmap-demo/src/polyfills.ts",
-            "tsConfig": "projects/angular-heatmap-demo/tsconfig.spec.json",
-            "karmaConfig": "projects/angular-heatmap-demo/karma.conf.js",
-            "assets": [
-              "projects/angular-heatmap-demo/src/favicon.ico",
-              "projects/angular-heatmap-demo/src/assets"
-            ],
-            "styles": [
-              "projects/angular-heatmap-demo/src/styles.scss"
-            ],
-            "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/angular-heatmap-demo/tsconfig.app.json",
-              "projects/angular-heatmap-demo/tsconfig.spec.json",
-              "projects/angular-heatmap-demo/e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "projects/angular-heatmap-demo/e2e/protractor.conf.js",
-            "devServerTarget": "angular-heatmap-demo:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "angular-heatmap-demo:serve:production"
-            }
           }
         }
       }
