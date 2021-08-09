@@ -2,7 +2,7 @@
 Angular Heatmap is a library for collecting user data for heatmaps. The data collected will include on what route path the user is, such that we can make seperate heatmaps for each route.
 
 ## Running demo project:
-Run `ng serve --project=angular-heatmap-demo`
+Run `ng serve --project=angular-heatmap-tour-of-heroes`
 
 ## Adding the module
 Add the import in your appModule
@@ -57,11 +57,11 @@ service.start();
 
 You can start to listen to updates from the subjects provided in this service:
 ```
-   this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {     
+   this.currentHeatMapSubscription = this.service.currentHeatMap$.subscribe(data => {
     console.log(data);
   });
 
-  this.heatMapDataSubscription = this.service.heatMapData$.subscribe(data => {     
+  this.heatMapDataSubscription = this.service.heatMapData$.subscribe(data => {
     console.log(data);
   });
 ```
@@ -69,18 +69,18 @@ You can start to listen to updates from the subjects provided in this service:
 ### onDestroy()
 Don't forget to unsubscribe from subscriptions, and if you want to stop all event listeners just call service.stop()
 ```
-  ngOnDestroy() {  
-  
+  ngOnDestroy() {
+
     // only if you want to stop tracking of pointer events
     service.stop();
-    
+
     if (this.currentHeatMapSubscription) {
       this.currentHeatMapSubscription.unsubscribe();
     }
 
     if (this.heatMapDataSubscription) {
       this.heatMapDataSubscription.unsubscribe();
-    }    
+    }
   }
 ```
 

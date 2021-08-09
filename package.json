@@ -13,6 +13,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "demo": "ng serve --project=angular-heatmap-tour-of-heroes",
     "build": "ng build --project=angular-heatmap --prod",
     "build-demo": "ng build --project=angular-heatmap-demo",
     "test": "ng test",

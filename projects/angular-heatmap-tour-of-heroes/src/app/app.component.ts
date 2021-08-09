@@ -17,4 +17,8 @@ export class AppComponent {
 
   title = 'Tour of Heroes';
 
+  constructor(private heatMapService: AngularHeatMapService) {
+    this.heatMapService.start();
+  }
+
 }
